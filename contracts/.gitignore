@@ -1,0 +1,21 @@
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+broadcast/
+
+# Docs
+docs/
+
+# Dotenv file
+.env
+
+# Dependency directories
+node_modules/
+
+# hardhat cache
+artifacts/build-info*
+artifacts/hardhat
+
+
