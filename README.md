@@ -11,15 +11,15 @@ A Next.js application for staking LP tokens and earning rewards. This applicatio
 - Node.js 18+ 
 - pnpm (recommended) or npm
 - A Vercel account for deployment
-- An Infura API key
-- A WalletConnect Project ID
+- An Infura API key ([Get one here](https://infura.io))
+- A WalletConnect Project ID ([Get one here](https://cloud.walletconnect.com))
 
 ## Quick Start
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
-cd <your-repo-name>
+git clone https://github.com/u-Operating-System/lp-staking-dashboard.git
+cd lp-staking-dashboard
 ```
 
 2. Install dependencies:
@@ -55,7 +55,7 @@ pnpm dev
 
 Visit `http://localhost:3000` to see your application.
 
-## Configuring Your Token
+## Contract Requirements
 
 1. Update the environment variables with your contract addresses:
    - `NEXT_PUBLIC_TOKEN_ADDRESS`: Your ERC20 token contract
@@ -71,37 +71,69 @@ Visit `http://localhost:3000` to see your application.
      - `exit()`
      - View functions: `balanceOf`, `earned`, `rewardRate`, etc.
 
-## Deployment to Vercel
+2. **Staking Rewards Contract**
+   Required functions:
+   ```solidity
+   // Core staking functions
+   function stake(uint256 amount) external;
+   function withdraw(uint256 amount) external;
+   function getReward() external;
+   function exit() external;
+   
+   // View functions
+   function balanceOf(address account) external view returns (uint256);
+   function earned(address account) external view returns (uint256);
+   function rewardRate() external view returns (uint256);
+   function totalSupply() external view returns (uint256);
+   ```
 
-1. Push your code to a GitHub repository
+## Deployment Guide
+
+### 1. Prepare Your Environment
+- Ensure all your contracts are deployed
+- Have your Infura API key ready
+- Have your WalletConnect Project ID ready
+
+### 2. Deploy to Vercel
+1. Push your code to GitHub:
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push
+   ```
 
 2. Connect to Vercel:
-   - Go to [Vercel](https://vercel.com)
+   - Visit [Vercel](https://vercel.com)
    - Create a new project
    - Import your GitHub repository
    - Select Next.js as the framework
 
 3. Configure environment variables:
-   - In your Vercel project settings, add all the environment variables from your `.env` file
-   - Make sure all variables are prefixed with `NEXT_PUBLIC_`
+   - Go to Settings > Environment Variables
+   - Add all variables from your `.env` file
+   - Ensure all variables are prefixed with `NEXT_PUBLIC_`
 
 4. Deploy:
+   - Click "Deploy"
    - Vercel will automatically build and deploy your application
    - Each push to main will trigger a new deployment
 
 ## Customization
 
-### Styling
+### 1. Styling
 - Update colors and styles in `app/globals.css`
 - Modify component styles using Tailwind classes
 - Theme configuration in `tailwind.config.js`
+- Replace logos and images in `public/`
 
-### Network Configuration
+### 2. Network Configuration
 - Default network is Base
-- To change networks, modify `app/config/wagmi.ts` and `app/config/rainbow.ts`
-- Update `NEXT_PUBLIC_CHAIN_ID` in your environment variables
+- To change networks:
+  1. Modify `app/config/wagmi.ts`
+  2. Update `app/config/rainbow.ts`
+  3. Update `NEXT_PUBLIC_CHAIN_ID` in your environment variables
 
-### UI Components
+### 3. UI Components
 - Main staking components in `app/components/staking/`
 - Shared UI components in `app/components/ui/`
 - Layout components in `app/components/`
@@ -109,7 +141,7 @@ Visit `http://localhost:3000` to see your application.
 ## Development Notes
 
 ### Contract Interactions
-- All contract calls use Wagmi hooks
+- All contract calls use Wagmi hooks for reliability
 - Contract ABIs and addresses are configured in `app/config/contracts.ts`
 - Custom hooks for contract interactions in `app/hooks/contracts/`
 
@@ -120,27 +152,28 @@ Visit `http://localhost:3000` to see your application.
 
 ## Troubleshooting
 
-Common issues and solutions:
+### Connection Issues
+- Ensure Infura API key is correct and has access to Base Network
+- Check WalletConnect Project ID is valid
+- Verify network configuration matches your deployed contracts
 
-1. **Connection Issues**
-   - Ensure Infura API key is correct
-   - Check WalletConnect Project ID
-   - Verify network configuration
+### Transaction Failures
+- Check token approvals are set correctly
+- Verify contract addresses match your deployed contracts
+- Ensure sufficient balance and gas for transactions
+- Check contract interfaces match the requirements
 
-2. **Transaction Failures**
-   - Check token approvals
-   - Verify contract addresses
-   - Ensure sufficient balance and gas
+### Build Errors
+- Clear `.next` directory: `rm -rf .next`
+- Update dependencies: `pnpm install`
+- Ensure Node.js version is 18+: `node --version`
 
-3. **Build Errors**
-   - Clear `.next` directory
-   - Update dependencies
-   - Check Node.js version
+## Support & Contributing
 
-## Support
-
-For issues and feature requests, please open an issue in the GitHub repository.
+- For issues and feature requests, please [open an issue](https://github.com/u-Operating-System/lp-staking-dashboard/issues)
+- Pull requests are welcome
+- Join our [Discord](https://discord.gg/your-discord) for community support
 
 ## License
 
-MIT License - see LICENSE file for details 
+MIT License - see [LICENSE](LICENSE) file for details 
