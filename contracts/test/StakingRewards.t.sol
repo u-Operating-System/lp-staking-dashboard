@@ -6,14 +6,14 @@ import "forge-std/console2.sol";
 
 import "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 
-import {UOS} from "src/UOS.sol";
+import {Token} from "src/Token.sol";
 import {StakingRewards} from "src/StakingRewards.sol";
 
 contract stakingRewardsTest is Test {
     // stakingToken (LP token)
     ERC20Mock public stakingToken;
     // rewardsToken
-    UOS public uOS;
+    Token public token;
 
     StakingRewards public stakingRewards;
 
@@ -24,15 +24,13 @@ contract stakingRewardsTest is Test {
     address dave = makeAddr("dave");
 
     function setUp() public {
-        uOS = new UOS();
+        token = new Token();
 
-        uOS.setMerkleRoot(0x5d004f1a32c534ec9cfe40339605d1514ac19bfcc3c4fc93fcf750d9a5a73636);
-
-        // transfer uOS for claims to the contract
-        uOS.transfer(address(uOS), 100_000 * 10 ** 18);
+        // transfer token for claims to the contract
+        token.transfer(address(token), 100_000 * 10 ** 18);
 
         stakingToken = new ERC20Mock();
-        stakingRewards = new StakingRewards(address(uOS), address(stakingToken));
+        stakingRewards = new StakingRewards(address(token), address(stakingToken));
 
         // mint and approve stakingToken
         stakingToken.mint(address(this), 1000 ether);
@@ -42,7 +40,7 @@ contract stakingRewardsTest is Test {
     /* settings and restricted functions */
     function testConstructorAndSettings() public {
         assertEq(stakingRewards.owner(), address(this), "owner != this");
-        assertEq(address(stakingRewards.rewardsToken()), address(uOS), "rewardsToken != uOS");
+        assertEq(address(stakingRewards.rewardsToken()), address(token), "rewardsToken != token");
         assertEq(address(stakingRewards.stakingToken()), address(stakingToken), "stakingToken != stakingToken");
         assertEq(stakingRewards.rewardsDuration(), 1 weeks, "rewardsDuration != 1 weeks");
     }
@@ -54,21 +52,21 @@ contract stakingRewardsTest is Test {
 
         vm.prank(alice);
         vm.expectRevert();
-        stakingRewards.recoverERC20(address(uOS), 10 ether);
+        stakingRewards.recoverERC20(address(token), 10 ether);
     }
 
     function testRecoverERC20() public {
         stakingToken.transfer(address(stakingRewards), 100 ether);
-        uOS.transfer(address(stakingRewards), 100 ether);
+        token.transfer(address(stakingRewards), 100 ether);
 
         // should revert, cannot withdraw stakingtoken
         vm.expectRevert(abi.encodePacked("Cannot withdraw the staking token"));
         stakingRewards.recoverERC20(address(stakingToken), 100 ether);
 
-        // should work, uOS is withdrawable by owner
-        uint256 balanceBefore = uOS.balanceOf(address(this));
-        stakingRewards.recoverERC20(address(uOS), 100 ether);
-        assertEq(uOS.balanceOf(address(this)), balanceBefore + 100 ether, "!balanceOf(this)");
+        // should work, token is withdrawable by owner
+        uint256 balanceBefore = token.balanceOf(address(this));
+        stakingRewards.recoverERC20(address(token), 100 ether);
+        assertEq(token.balanceOf(address(this)), balanceBefore + 100 ether, "!balanceOf(this)");
     }
 
     function testSetRewardsDuration() public {
@@ -138,24 +136,24 @@ contract stakingRewardsTest is Test {
     }
 
     function testFuzz_NotifyRewardAmount(uint256 reward) public {
-        // bind reward to be between 1 and 1000 uOS
+        // bind reward to be between 1 and 1000 token
         reward = bound(reward, 1 ether, 1000 ether);
 
         // transfering exact reward should work
-        uOS.transfer(address(stakingRewards), reward);
+        token.transfer(address(stakingRewards), reward);
         stakingRewards.notifyRewardAmount(reward);
 
         // transfering too much reward should work
-        uOS.transfer(address(stakingRewards), reward);
+        token.transfer(address(stakingRewards), reward);
         stakingRewards.notifyRewardAmount(reward - 0.001 ether);
     }
 
     function testFuzz_RevertNotifyRewardAmount(uint256 reward) public {
-        // bind reward to be between 1 and 1000 uOS
+        // bind reward to be between 1 and 1000 token
         reward = bound(reward, 1 ether, 1000 ether);
 
         // transfering too little reward should revert
-        uOS.transfer(address(stakingRewards), reward - 0.001 ether);
+        token.transfer(address(stakingRewards), reward - 0.001 ether);
         vm.expectRevert("Provided reward too high");
         stakingRewards.notifyRewardAmount(reward);
     }
@@ -167,10 +165,10 @@ contract stakingRewardsTest is Test {
         // rewardPerToken should be 0 before any staking
         assertEq(stakingRewards.rewardPerToken(), 0, "!rewardPerToken");
 
-        // stake 100 uOS
+        // stake 100 token
         stakingRewards.stake(100 ether);
         // send rewards to stakingRewards
-        uOS.transfer(address(stakingRewards), 10 ether);
+        token.transfer(address(stakingRewards), 10 ether);
         stakingRewards.notifyRewardAmount(10 ether);
 
         // fast forward 3 days
@@ -181,10 +179,10 @@ contract stakingRewardsTest is Test {
     }
 
     function testRewardsTokenBalanceShouldRollOver() public {
-        // stake 100 uOS
+        // stake 100 token
         stakingRewards.stake(100 ether);
         // send rewards to stakingRewards
-        uOS.transfer(address(stakingRewards), 10 ether);
+        token.transfer(address(stakingRewards), 10 ether);
         stakingRewards.notifyRewardAmount(10 ether);
 
         // fast forward 7 days
@@ -193,7 +191,7 @@ contract stakingRewardsTest is Test {
         uint256 earnedFirst = stakingRewards.earned(address(this));
 
         // send rewards to stakingRewards
-        uOS.transfer(address(stakingRewards), 10 ether);
+        token.transfer(address(stakingRewards), 10 ether);
         stakingRewards.notifyRewardAmount(10 ether);
 
         skip(7 days);
@@ -205,7 +203,7 @@ contract stakingRewardsTest is Test {
 
     function testGetReward() public {
         // send rewards to stakingRewards
-        uOS.transfer(address(stakingRewards), 10 ether);
+        token.transfer(address(stakingRewards), 10 ether);
         stakingRewards.notifyRewardAmount(10 ether);
 
         stakingRewards.stake(100 ether);
@@ -214,7 +212,7 @@ contract stakingRewardsTest is Test {
         stakingRewards.getReward();
 
         // rewards should be transferred out after rewardsDuration has passed (except some rounding error)
-        assertApproxEqAbs(uOS.balanceOf(address(stakingRewards)), 0, 1e6, "!balanceOf(stakingRewards)");
+        assertApproxEqAbs(token.balanceOf(address(stakingRewards)), 0, 1e6, "!balanceOf(stakingRewards)");
     }
 
     function testRewardRateShouldIncreaseBeforeDurationEnds() public {
@@ -222,7 +220,7 @@ contract stakingRewardsTest is Test {
         assertEq(stakingRewards.rewardRate(), 0, "!rewardRate");
 
         // send rewards to stakingRewards
-        uOS.transfer(address(stakingRewards), 10 ether);
+        token.transfer(address(stakingRewards), 10 ether);
         stakingRewards.notifyRewardAmount(10 ether);
         uint256 initialRewardRate = stakingRewards.rewardRate();
         assertEq(initialRewardRate, 10 ether / stakingRewards.rewardsDuration(), "!rewardRate");
@@ -230,7 +228,7 @@ contract stakingRewardsTest is Test {
         skip(3 days);
 
         // send more rewards to stakingRewards
-        uOS.transfer(address(stakingRewards), 10 ether);
+        token.transfer(address(stakingRewards), 10 ether);
         stakingRewards.notifyRewardAmount(10 ether);
 
         // rewardRate should have increased
@@ -239,7 +237,7 @@ contract stakingRewardsTest is Test {
 
     function testGetRewardForDuration() public {
         // send rewards to stakingRewards
-        uOS.transfer(address(stakingRewards), 10 ether);
+        token.transfer(address(stakingRewards), 10 ether);
         stakingRewards.notifyRewardAmount(10 ether);
 
         // getRewardForDuration should return the reward rate * rewardsDuration
@@ -257,7 +255,7 @@ contract stakingRewardsTest is Test {
     /* user related tests */
 
     function testFuzz_Stake(uint256 amount) public {
-        // bind amount to be between 1 and 1000 uOS
+        // bind amount to be between 1 and 1000 token
         amount = bound(amount, 1 ether, 1000 ether);
 
         // stake should work
@@ -269,7 +267,7 @@ contract stakingRewardsTest is Test {
     }
 
     function testFuzz_Withdraw(uint256 amount) public {
-        // bind amount to be between 1 and 1000 uOS
+        // bind amount to be between 1 and 1000 token
         amount = bound(amount, 1 ether, 1000 ether);
 
         // balance before staking
@@ -294,7 +292,7 @@ contract stakingRewardsTest is Test {
     }
 
     function testFuzz_Exit(uint256 amount) public {
-        // bind amount to be between 1 and 1000 uOS
+        // bind amount to be between 1 and 1000 token
         amount = bound(amount, 1 ether, 1000 ether);
 
         // balance before staking
