@@ -1,111 +1,170 @@
 # Customization Guide
 
-This document provides a step-by-step guide on how to customize the Liquidity Incentive Program dashboard for your own token.
+This document provides detailed instructions on how to customize the Liquidity Incentive Program for your own token.
 
-## Required Assets
+## Required Assets and API Keys
 
-Before you start, make sure you have the following assets prepared:
+Before you start, make sure you have:
 
-1. **Token Logo** - Create and add the following files to the `public` directory:
-   - `favicon.ico` - Website favicon (recommended size: 32x32px)
-   - `logo-white.svg` - White version of your logo for the header
-   - Any other logo variations you might need
+1. **Contract Addresses**
+   - Your ERC20 token contract address
+   - Your LP token contract address
+   - Your staking rewards contract address
 
-## Placeholder Replacements
+2. **API Keys**
+   - Infura API key for Base network access
+   - WalletConnect Project ID
 
-The application uses placeholder values that need to be replaced with your own:
+3. **Assets**
+   - `favicon.ico` and `favicon.png` for your website
+   - Any custom images or logos you want to use
 
-### 1. Token Details
+## Environment Setup
 
-Throughout the application, replace:
-- `TOKEN` - Your token name
-- `$TOKEN` - Your token ticker with $ prefix
+1. Create a `.env` file in the root directory:
+```env
+# Contract Addresses
+NEXT_PUBLIC_TOKEN_ADDRESS=0x...
+NEXT_PUBLIC_LP_TOKEN_ADDRESS=0x...
+NEXT_PUBLIC_STAKING_REWARDS_ADDRESS=0x...
 
-### 2. Smart Contract Addresses (in .env.local)
-
-Create a `.env.local` file in the root directory and set these variables:
-```
+# API Keys
+NEXT_PUBLIC_INFURA_API_KEY=your_infura_key
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
-NEXT_PUBLIC_TOKEN_TOKEN_ADDRESS=your_token_contract_address
-NEXT_PUBLIC_LP_TOKEN_ADDRESS=your_lp_token_address
-NEXT_PUBLIC_STAKING_REWARDS_ADDRESS=your_staking_rewards_address
+
+# Network Configuration
+NEXT_PUBLIC_CHAIN_ID=8453  # Base Network
 ```
 
-### 3. Community Links
+## Network Configuration
 
-In `app/components/BottomNavigation.tsx`, update these placeholder URLs:
+### Base Network (Default)
+The application is configured to use Base network by default. The configuration is in:
+- `app/config/wagmi.ts`
+- `app/config/rainbow.ts`
+
+To use a different network:
+1. Update the chain configuration in both files
+2. Update the RPC URLs
+3. Change `NEXT_PUBLIC_CHAIN_ID` in your environment variables
+
+## UI Customization
+
+### 1. Theme Colors
+Modify `tailwind.config.js` to match your brand colors:
 
 ```javascript
-// Social media URLs
-href="https://twitter.com/your-handle"
-href="https://medium.com/@your-handle"
-href="https://warpcast.com/your-handle"
-href="https://discord.gg/your-invite-code"
-href="https://t.me/your-community"
-
-// Documentation and GitHub
-href="https://docs.example.com"
-href="https://github.com/your-org/your-repo"
-```
-
-### 4. DEX Integration
-
-In `app/components/BottomNavigation.tsx` and in `app/page.tsx`, update the swap/add liquidity links:
-
-```javascript
-// Example from BottomNavigation.tsx
-href="https://app.example.com/swap"
-
-// Example from page.tsx (Add Liquidity button)
-href="https://aerodrome.finance/deposit?token0=0x4200000000000000000000000000000000000006&token1=YOUR_TOKEN_ADDRESS_HERE&type=-1&chain=8453&factory=0x420DD381b31aEf6683db6B902084cB0FFECe40Da"
-```
-
-## Additional Customization
-
-### Theme Colors
-
-You can modify the theme colors in `tailwind.config.ts` to match your brand:
-
-```typescript
 theme: {
   extend: {
     colors: {
       background: "#121212",
       foreground: "#FFFFFF",
-      border: "hsl(var(--border))",
       primary: {
         DEFAULT: "your-primary-color",
         foreground: "your-primary-foreground-color",
       },
-      // Add more color customizations as needed
+      // Add more colors as needed
     },
   },
 }
 ```
 
-### Application Settings
+### 2. Component Styling
+Key files for styling customization:
+- `app/globals.css` - Global styles
+- `app/styles/fonts.css` - Font configuration
+- Individual component files in `app/components/`
 
-Update these files to configure application metadata:
+### 3. Layout and Content
+Main files to customize:
+- `app/layout.tsx` - Main layout and metadata
+- `app/page.tsx` - Landing page content
+- `app/components/Header.tsx` - Navigation header
+- `app/components/BottomNavigation.tsx` - Footer navigation
 
-1. `package.json` - Update name and version
-2. `public/manifest.json` - Update name, description, and theme colors
+## Contract Integration
 
-## Deployment
+### Required Contract Functions
 
-Once you've completed the customizations:
+1. **Token & LP Token (ERC20)**
+   - `balanceOf(address)`
+   - `approve(address, uint256)`
+   - `transfer(address, uint256)`
+   - `transferFrom(address, address, uint256)`
+   - `allowance(address, address)`
 
-1. Build the application:
+2. **Staking Rewards Contract**
+   - `stake(uint256)`
+   - `withdraw(uint256)`
+   - `getReward()`
+   - `exit()`
+   - View functions:
+     - `balanceOf(address)`
+     - `earned(address)`
+     - `rewardRate()`
+     - `totalSupply()`
+
+### Contract Configuration
+Contract ABIs and addresses are configured in `app/config/contracts.ts`
+
+## Vercel Deployment
+
+1. **Environment Variables**
+   Add all variables from your `.env` file to your Vercel project:
+   - Go to Project Settings > Environment Variables
+   - Add each variable (all should start with `NEXT_PUBLIC_`)
+
+2. **Build Settings**
+   - Framework Preset: Next.js
+   - Build Command: `next build`
+   - Output Directory: `.next`
+   - Install Command: `pnpm install`
+
+3. **Domain Configuration**
+   - Set up a custom domain if needed
+   - Configure SSL/TLS settings
+
+## Testing Your Customization
+
+1. **Local Testing**
 ```bash
-npm run build
+pnpm dev
 ```
 
-2. Deploy to your hosting provider of choice (Vercel, Netlify, etc.)
+2. **Production Build Test**
+```bash
+pnpm build
+pnpm start
+```
+
+3. **Key Areas to Test**
+   - Contract interactions
+   - Wallet connections
+   - Transaction flows
+   - Responsive design
+   - Network switching
+   - Error handling
 
 ## Troubleshooting
 
-If you encounter issues with your customizations:
+### Common Issues
 
-1. Check browser console for errors
-2. Ensure all environment variables are properly set
-3. Confirm all contract addresses are valid
-4. Make sure your logo files are in the correct format and location 
+1. **Contract Interaction Failures**
+   - Verify contract addresses
+   - Check ABI compatibility
+   - Ensure proper network configuration
+
+2. **Styling Issues**
+   - Clear `.next` cache
+   - Rebuild Tailwind classes
+   - Check browser console for errors
+
+3. **Build Failures**
+   - Verify all environment variables
+   - Check Node.js version
+   - Clear dependency cache
+
+### Getting Help
+- Check the GitHub repository issues
+- Review the contract documentation
+- Consult Base network documentation 

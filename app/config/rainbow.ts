@@ -15,7 +15,7 @@ const baseChain = {
 };
 
 export const config = getDefaultConfig({
-  appName: 'uOS Finance',
+  appName: 'Staking App',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
   chains: [baseChain],
   ssr: true,

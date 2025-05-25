@@ -1,113 +1,146 @@
-# TOKEN LP Staking Dashboard
+# Liquidity Staking Program
 
-A minimalist, user-friendly dashboard for staking TOKEN-WETH LP tokens on Base network. Rewards are manually distributed from the treasury on a weekly basis.
+A Next.js application for staking LP tokens and earning rewards. This application uses:
+- Next.js 13+ (App Router)
+- RainbowKit & Wagmi for Web3 integration
+- Tailwind CSS for styling
+- Base Network support
 
-## Features
+## Prerequisites
 
-- Stake and unstake LP tokens
-- Claim staking rewards
-- Real-time APR display
-- Wallet connection with RainbowKit
-- Responsive design with TOKEN theme
-
-## Smart Contract Development
-
-### Prerequisites
-- Node.js v18+
-- npm or yarn
-- A Base network RPC URL
-- A Base network private key for deployment
-- A Basescan API key for contract verification
-
-### Environment Setup
-Create a `.env` file in the root directory with:
-```env
-BASE_RPC_URL=your_base_rpc_url
-PRIVATE_KEY=your_deployment_private_key
-BASESCAN_API_KEY=your_basescan_api_key
-```
-
-### Contract Development
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Compile contracts:
-```bash
-npx hardhat compile
-```
-
-3. Run tests:
-```bash
-npx hardhat test
-```
-
-4. Deploy contracts:
-```bash
-npx hardhat run scripts/deploy.ts --network base
-```
-
-5. Verify contracts:
-```bash
-npx hardhat verify --network base [CONTRACT_ADDRESS]
-```
-
-### Contract Structure
-- `contracts/StakingRewards.sol`: Main staking contract
-- `contracts/interfaces/IStakingRewards.sol`: Contract interface
-- `contracts/test/`: Test files
-
-### Frontend Integration
-The frontend is already set up to work with the contracts. After deployment:
-1. Update `.env.local` with the deployed contract addresses
-2. The frontend will automatically use the new contracts
-
-## Frontend Development
-
-### Prerequisites
-- Node.js v18+
-- npm or yarn
+- Node.js 18+ 
+- pnpm (recommended) or npm
+- A Vercel account for deployment
+- An Infura API key
 - A WalletConnect Project ID
 
-### Environment Setup
-Create a `.env.local` file with:
+## Quick Start
+
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd <your-repo-name>
+```
+
+2. Install dependencies:
+```bash
+pnpm install
+```
+
+3. Create a `.env` file in the root directory:
 ```env
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
-NEXT_PUBLIC_TOKEN_TOKEN_ADDRESS=deployed_token_token_address
-NEXT_PUBLIC_LP_TOKEN_ADDRESS=deployed_lp_token_address
-NEXT_PUBLIC_STAKING_REWARDS_ADDRESS=deployed_staking_rewards_address
+# Required: Your token contract address
+NEXT_PUBLIC_TOKEN_ADDRESS=0x...
+
+# Required: Your LP token contract address
+NEXT_PUBLIC_LP_TOKEN_ADDRESS=0x...
+
+# Required: Your staking rewards contract address
+NEXT_PUBLIC_STAKING_REWARDS_ADDRESS=0x...
+
+# Required: Infura API key for Base network
+NEXT_PUBLIC_INFURA_API_KEY=your_infura_key
+
+# Required: WalletConnect Project ID
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
+
+# Optional: Chain ID (defaults to Base: 8453)
+NEXT_PUBLIC_CHAIN_ID=8453
 ```
 
-### Development
-1. Install dependencies:
+4. Run the development server:
 ```bash
-npm install
+pnpm dev
 ```
 
-2. Run development server:
-```bash
-npm run dev
-```
+Visit `http://localhost:3000` to see your application.
 
-3. Build for production:
-```bash
-npm run build
-```
+## Configuring Your Token
 
-## Project Structure
-```
-token-finance/
-├── app/                   # Frontend application
-├── contracts/             # Smart contracts
-├── scripts/               # Deployment scripts
-└── typechain-types/       # Generated contract types
-```
+1. Update the environment variables with your contract addresses:
+   - `NEXT_PUBLIC_TOKEN_ADDRESS`: Your ERC20 token contract
+   - `NEXT_PUBLIC_LP_TOKEN_ADDRESS`: Your LP token contract (e.g., Uniswap V2 pair)
+   - `NEXT_PUBLIC_STAKING_REWARDS_ADDRESS`: Your staking rewards contract
 
-## Contributing
-1. Create a new branch for your feature
-2. Make your changes
-3. Submit a pull request
+2. The contracts must implement the following interfaces:
+   - Token & LP Token: Standard ERC20 interface
+   - Staking Rewards: Standard staking rewards interface with the following methods:
+     - `stake(uint256 amount)`
+     - `withdraw(uint256 amount)`
+     - `getReward()`
+     - `exit()`
+     - View functions: `balanceOf`, `earned`, `rewardRate`, etc.
+
+## Deployment to Vercel
+
+1. Push your code to a GitHub repository
+
+2. Connect to Vercel:
+   - Go to [Vercel](https://vercel.com)
+   - Create a new project
+   - Import your GitHub repository
+   - Select Next.js as the framework
+
+3. Configure environment variables:
+   - In your Vercel project settings, add all the environment variables from your `.env` file
+   - Make sure all variables are prefixed with `NEXT_PUBLIC_`
+
+4. Deploy:
+   - Vercel will automatically build and deploy your application
+   - Each push to main will trigger a new deployment
+
+## Customization
+
+### Styling
+- Update colors and styles in `app/globals.css`
+- Modify component styles using Tailwind classes
+- Theme configuration in `tailwind.config.js`
+
+### Network Configuration
+- Default network is Base
+- To change networks, modify `app/config/wagmi.ts` and `app/config/rainbow.ts`
+- Update `NEXT_PUBLIC_CHAIN_ID` in your environment variables
+
+### UI Components
+- Main staking components in `app/components/staking/`
+- Shared UI components in `app/components/ui/`
+- Layout components in `app/components/`
+
+## Development Notes
+
+### Contract Interactions
+- All contract calls use Wagmi hooks
+- Contract ABIs and addresses are configured in `app/config/contracts.ts`
+- Custom hooks for contract interactions in `app/hooks/contracts/`
+
+### State Management
+- Uses React state and Wagmi for Web3 state
+- Toast notifications for transaction status
+- Loading states handled automatically
+
+## Troubleshooting
+
+Common issues and solutions:
+
+1. **Connection Issues**
+   - Ensure Infura API key is correct
+   - Check WalletConnect Project ID
+   - Verify network configuration
+
+2. **Transaction Failures**
+   - Check token approvals
+   - Verify contract addresses
+   - Ensure sufficient balance and gas
+
+3. **Build Errors**
+   - Clear `.next` directory
+   - Update dependencies
+   - Check Node.js version
+
+## Support
+
+For issues and feature requests, please open an issue in the GitHub repository.
 
 ## License
-MIT 
+
+MIT License - see LICENSE file for details 

@@ -7,8 +7,8 @@ import './globals.css';
 import './styles/fonts.css';
 
 export const metadata: Metadata = {
-  title: 'TOKEN Liquidity Incentive Program',
-  description: 'Stake TOKEN/ETH liquidity tokens, earn $TOKEN rewards',
+  title: 'Liquidity Incentive Program',
+  description: 'Stake LP tokens, earn rewards',
   icons: {
     icon: '/favicon.ico',
     apple: '/favicon.png'

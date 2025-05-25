@@ -12,8 +12,8 @@ export default function Home() {
     <main className="min-h-screen bg-background px-4 md:px-8 pb-40 md:pb-24">
       <div className="mx-auto max-w-6xl">
         <div className="h-screen flex flex-col justify-center relative">
-          <h1 className="text-5xl font-normal text-white mb-4">TOKEN Liquidity Incentive Program</h1>
-          <p className="text-xl text-gray-400 mb-8">Stake TOKEN/ETH liquidity tokens, earn <span className="bg-gradient-to-r from-green-700 via-green-300 to-green-700 text-transparent bg-clip-text font-semibold animate-pulse">$TOKEN</span> rewards</p>
+          <h1 className="text-5xl font-normal text-white mb-4">Liquidity Incentive Program</h1>
+          <p className="text-xl text-gray-400 mb-8">Stake LP tokens, earn <span className="bg-gradient-to-r from-green-700 via-green-300 to-green-700 text-transparent bg-clip-text font-semibold animate-pulse">rewards</span></p>
           
           <Link 
             href="https://yourexchange.com/addliquidity"

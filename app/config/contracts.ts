@@ -4,19 +4,19 @@
 const DEFAULT_MOCK_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 // Get contract addresses from environment or use mock values
-const uosTokenAddress = process.env.NEXT_PUBLIC_UOS_TOKEN_ADDRESS || DEFAULT_MOCK_ADDRESS;
+const tokenAddress = process.env.NEXT_PUBLIC_TOKEN_ADDRESS || DEFAULT_MOCK_ADDRESS;
 const lpTokenAddress = process.env.NEXT_PUBLIC_LP_TOKEN_ADDRESS || DEFAULT_MOCK_ADDRESS;
 const stakingRewardsAddress = process.env.NEXT_PUBLIC_STAKING_REWARDS_ADDRESS || DEFAULT_MOCK_ADDRESS;
 
 // Log warning for development mode
-if (!process.env.NEXT_PUBLIC_UOS_TOKEN_ADDRESS || 
+if (!process.env.NEXT_PUBLIC_TOKEN_ADDRESS || 
     !process.env.NEXT_PUBLIC_LP_TOKEN_ADDRESS || 
     !process.env.NEXT_PUBLIC_STAKING_REWARDS_ADDRESS) {
   console.warn('Running in development mode with mock contract addresses. Set environment variables for production use.');
 }
 
 export const CONTRACTS = {
-  UOS_TOKEN: uosTokenAddress as `0x${string}`,
+  TOKEN: tokenAddress as `0x${string}`,
   LP_TOKEN: lpTokenAddress as `0x${string}`,
   STAKING_REWARDS: stakingRewardsAddress as `0x${string}`
 } as const;

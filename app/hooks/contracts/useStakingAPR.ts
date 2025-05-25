@@ -27,9 +27,9 @@ export const useStakingAPR = () => {
     functionName: 'totalSupply',
   });
 
-  // Get uOS balance in LP pool
-  const { data: uOSInLP, isError: isUOSInLPError } = useReadContract({
-    address: CONTRACTS.UOS_TOKEN,
+  // Get token balance in LP pool
+  const { data: tokenInLP, isError: isTokenInLPError } = useReadContract({
+    address: CONTRACTS.TOKEN,
     abi: ERC20_ABI,
     functionName: 'balanceOf',
     args: [CONTRACTS.LP_TOKEN],
@@ -37,21 +37,21 @@ export const useStakingAPR = () => {
 
   // Calculate APR
   const calculateAPR = () => {
-    if (!rewardRate || !totalSupply || !lpTotalSupply || !uOSInLP) {
+    if (!rewardRate || !totalSupply || !lpTotalSupply || !tokenInLP) {
       return 0;
     }
 
     // First calculate APR per LP token staked
     const aprPerLPTokenStaked = (Number(rewardRate) / Number(totalSupply) * ONE_YEAR_IN_SECONDS * 100);
     
-    // Then calculate APR per uOS provided in liquidity
-    const aprPerUOSProvided = (aprPerLPTokenStaked * Number(lpTotalSupply)) / Number(uOSInLP);
+    // Then calculate APR per token provided in liquidity
+    const aprPerTokenProvided = (aprPerLPTokenStaked * Number(lpTotalSupply)) / Number(tokenInLP);
 
-    return aprPerUOSProvided;
+    return aprPerTokenProvided;
   };
 
-  const isLoading = !rewardRate || !totalSupply || !lpTotalSupply || !uOSInLP;
-  const isError = isRewardRateError || isTotalSupplyError || isLpTotalSupplyError || isUOSInLPError;
+  const isLoading = !rewardRate || !totalSupply || !lpTotalSupply || !tokenInLP;
+  const isError = isRewardRateError || isTotalSupplyError || isLpTotalSupplyError || isTokenInLPError;
 
   return {
     apr: calculateAPR(),
