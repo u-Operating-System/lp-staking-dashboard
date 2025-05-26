@@ -1,10 +1,69 @@
-# Liquidity Staking Program
+# LP Staking Dashboard
 
-A Next.js application for staking LP tokens and earning rewards. This application uses:
-- Next.js 13+ (App Router)
-- RainbowKit & Wagmi for Web3 integration
-- Tailwind CSS for styling
-- Base Network support
+## Overview
+
+The LP Staking Dashboard is a decentralized application for managing liquidity provider (LP) token staking on Base Network. Users can stake their LP tokens and track rewards through a clean, functional interface.
+
+### Key Features
+
+**Smart Contracts**
+- OpenZeppelin-based implementation
+- Standard staking and reward mechanisms
+- Audited security measures
+
+**Reward Distribution**
+- Configurable distribution rates
+- Multiple reward token support
+- Time-based emission controls
+
+**Network**
+- Base Network deployment
+- Gas-optimized operations
+- Standard ERC20 compatibility
+
+**Frontend**
+- Next.js 13+ with App Router
+- TypeScript implementation
+- Component-based architecture
+
+**Data Handling**
+- Real-time state updates
+- On-chain data synchronization
+- Transaction state management
+
+**Web3 Integration**
+- WalletConnect support
+- Wagmi hooks for contract interactions
+- Standard Web3 error handling
+
+## Project Structure
+
+```
+uOS-LP/
+├── app/                    # Next.js frontend application
+│   ├── components/        # React components
+│   │   ├── staking/      # Staking-specific components
+│   │   ├── ui/           # Reusable UI components
+│   │   └── layout/       # Layout components
+│   ├── config/           # Configuration files
+│   │   ├── contracts.ts  # Contract addresses and ABIs
+│   │   ├── wagmi.ts     # Web3 configuration
+│   │   └── rainbow.ts    # Wallet connection setup
+│   ├── hooks/            # Custom React hooks
+│   │   ├── contracts/    # Contract interaction hooks
+│   │   └── state/        # State management hooks
+│   ├── providers/        # React context providers
+│   ├── styles/           # Global styles and themes
+│   ├── types/            # TypeScript type definitions
+│   ├── layout.tsx        # Root layout component
+│   ├── page.tsx          # Home page component
+│   └── globals.css       # Global CSS styles
+├── contracts/            # Smart contract implementation
+│   ├── src/             # Core contract source code
+│   └── test/            # Contract test suite
+├── docs/                # Additional documentation
+└── public/              # Static assets
+```
 
 ## Prerequisites
 
@@ -140,15 +199,62 @@ Visit `http://localhost:3000` to see your application.
 
 ## Development Notes
 
-### Contract Interactions
-- All contract calls use Wagmi hooks for reliability
-- Contract ABIs and addresses are configured in `app/config/contracts.ts`
-- Custom hooks for contract interactions in `app/hooks/contracts/`
+### Local Development Setup
 
-### State Management
-- Uses React state and Wagmi for Web3 state
-- Toast notifications for transaction status
-- Loading states handled automatically
+1. **Smart Contracts**
+   ```bash
+   cd contracts
+   forge install    # Install Foundry dependencies
+   forge test      # Run contract tests
+   forge coverage  # Check test coverage
+   ```
+
+2. **Frontend Development**
+   ```bash
+   cd app
+   pnpm dev        # Start development server
+   pnpm test       # Run frontend tests
+   pnpm build      # Create production build
+   ```
+
+### Architecture Overview
+
+- **Smart Contracts**: Built with Solidity using OpenZeppelin's battle-tested contracts
+  - Staking logic in `contracts/src/Staking.sol`
+  - Reward distribution in `contracts/src/Rewards.sol`
+  - Comprehensive test suite in `contracts/test/`
+
+- **Frontend Architecture**
+  - React components using Next.js 13+ App Router
+  - Web3 integration via Wagmi hooks
+  - Type-safe contract interactions
+  - Real-time data updates using SWR
+
+### Best Practices
+
+- Always run tests before submitting PRs
+- Follow the conventional commit format
+- Update documentation when adding features
+- Add appropriate error handling for contract calls
+- Include proper TypeScript types for all components
+
+### Common Development Tasks
+
+1. **Adding New Features**
+   - Create feature branch: `git checkout -b feature/your-feature`
+   - Update relevant tests
+   - Add documentation
+   - Submit PR with comprehensive description
+
+2. **Contract Updates**
+   - Update ABIs in `app/config/contracts`
+   - Regenerate types: `pnpm typechain`
+   - Update relevant frontend components
+
+3. **Testing**
+   - Smart Contracts: `forge test`
+   - Frontend: `pnpm test`
+   - E2E: `pnpm test:e2e`
 
 ## Troubleshooting
 
